@@ -19,7 +19,7 @@ class WeatherService{
       }
     }
   }
-  Future<String>getCurrentCity()async{
+  Future<String>getCurrentCity(String cityName)async{
 
     //Get Permission from User
     LocationPermission permission = await Geolocator.checkPermission();
@@ -31,12 +31,12 @@ class WeatherService{
     Position position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high
     );
-    //Convert Location in To List of Placemark Oject
+    //Convert Location in To List of Placemark object
     List<Placemark>placemarks= await placemarkFromCoordinates(position.latitude,position.longitude);
 
     //extract the city name from the first placemark
     String? city = placemarks[0].locality;
 
-    return city;
+    return city??"";
   }
 }
