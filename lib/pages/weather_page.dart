@@ -60,15 +60,17 @@ String getWeatherAnimation(String? mainCondition){
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
+      backgroundColor: Colors.lightBlue,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(_weather?.cityName ?? "loading city..."),
+            Text(_weather?.cityName ?? "loading city...",style: TextStyle(fontSize: 56.0,color: Colors.white),),
             //animation
             Lottie.asset('assets/raining.json'),
-            Text('${_weather?.temperature.round()}ºC'),
-            Text(_weather?.mainCondition ?? "")
+            Text('${_weather?.temperature.round()}ºC',style: TextStyle(fontSize: 46.0,color: Colors.white),),
+            SizedBox(height: 20,),
+            Text(_weather?.mainCondition ?? "",style: TextStyle(fontSize: 26.0,color: Colors.white),)
           ],
         ),
       ),
