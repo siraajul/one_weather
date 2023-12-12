@@ -16,6 +16,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: false,
       ),
+      debugShowCheckedModeBanner: false,
       home: const WeatherPage(),
     );
   }
