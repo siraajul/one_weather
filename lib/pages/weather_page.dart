@@ -1,86 +1,85 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
 import 'package:one_weather/models/weather_model.dart';
 import 'package:one_weather/services/weather_services.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
-class WeatherPage extends StatefulWidget {
+import '../weather/bloc.dart';
+import '../weather/event.dart';
+import '../weather/state.dart';
+
+class WeatherPage extends StatelessWidget {
   const WeatherPage({super.key});
 
   @override
-  State<WeatherPage> createState() => _WeatherPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => WeatherBloc(weatherService: WeatherService())
+        ..add(FetchWeather('Sylhet')),
+      child: BuildWeather(),
+    );
+  }
 }
 
-class _WeatherPageState extends State<WeatherPage> {
-  //api key
-  final _weatherService = WeatherService();
-  Weather? _weather;
-
-  Future _fetchWeather() async {
-    //get current city
-    String cityName = await _weatherService.getCurrentCity();
-    //any errors
-    try {
-      final weather = await _weatherService.getWeather(cityName);
-      setState(() {
-        _weather = weather;
-      });
-    }
-    //any errors
-    catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-    }
-  }
-  //init state
-  @override
-  void initState(){
-    super.initState();
-    //fetch weather on startup
-      _fetchWeather();
-    }
-
+class BuildWeather extends StatelessWidget {
+  const BuildWeather({super.key});
 
   //weather animations
-String getWeatherAnimation(String? mainCondition){
-    if (mainCondition == null) return 'assets/sunny.json';//default to sunny
+  String getWeatherAnimation(String? mainCondition) {
+    if (mainCondition == null) return 'assets/sunny.json'; //default to sunny
 
-    switch(mainCondition.toLowerCase()){
+    switch (mainCondition.toLowerCase()) {
       case 'clouds':
       case 'mist':
       case 'smoke':
       case 'haze':
       case 'dust':
       case 'fog':
-        return 'assets/raining.json';
+        return 'assets/sunny.json';
       default:
         return 'assets/sunny.json';
     }
-}
-
+  }
 
   @override
   Widget build(BuildContext context) {
-    return  LiquidPullToRefresh(
-      onRefresh: _fetchWeather,
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: Colors.lightBlue,
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(_weather?.cityName ?? "loading city...",style: const TextStyle(fontSize: 56.0,color: Colors.white),),
-              //animation
-              Lottie.asset('assets/raining.json'),
-              Text('${_weather?.temperature.round()}ºC',style: const TextStyle(fontSize: 46.0,color: Colors.white),),
-              const SizedBox(height: 20,),
-              Text(_weather?.mainCondition ?? "",style: const TextStyle(fontSize: 26.0,color: Colors.white),)
-            ],
-          ),
-        ),
-      ),
-    );
+        body: BlocBuilder<WeatherBloc, WeatherState>(builder: (context, state) {
+          if (state is LoadingState) {
+            return const CircularProgressIndicator();
+          }
+
+          if (state is Loaded) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    state.weather.cityName ?? "loading city...",
+                    style: const TextStyle(fontSize: 56.0, color: Colors.white),
+                  ),
+                  //animation
+                  Lottie.asset('assets/raining.json'),
+                  Text(
+                    '${state.weather?.temperature.round()}ºC',
+                    style: const TextStyle(fontSize: 46.0, color: Colors.white),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    state.weather?.mainCondition ?? "",
+                    style: const TextStyle(fontSize: 26.0, color: Colors.white),
+                  )
+                ],
+              ),
+            );
+          } else {
+            return Text('Something went wrong');
+          }
+        }));
   }
 }

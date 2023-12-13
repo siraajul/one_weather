@@ -4,7 +4,7 @@ import 'package:one_weather/pages/weather_page.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: "api.env");
+  await dotenv.load(fileName: ".env.api");
   runApp(const MyApp());
 }
 

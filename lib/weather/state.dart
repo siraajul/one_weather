@@ -4,10 +4,27 @@ import '../models/weather_model.dart';
 
 abstract class WeatherState {}
 
-class initialState extends WeatherState {}
+class InitialState extends WeatherState {
+  @override
+  List<Object> get props => [];
+}
 
-class loadingState extends WeatherState {}
+class LoadingState extends WeatherState {
+  @override
+  List<Object> get props => [];
+}
 
-class loaded extends WeatherState {}
+class Loaded extends WeatherState {
 
-class error extends WeatherState {}
+  Loaded(this.weather);
+
+  final Weather weather;
+
+  @override
+  List<Object> get props => [weather];
+}
+
+class Error extends WeatherState {
+  @override
+  List<Object> get props => [];
+}
