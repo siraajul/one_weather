@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:one_weather/models/weather_model.dart';
 import 'package:one_weather/services/weather_services.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 class WeatherPage extends StatefulWidget {
   const WeatherPage({super.key});
@@ -15,9 +17,9 @@ class _WeatherPageState extends State<WeatherPage> {
   final _weatherService = WeatherService();
   Weather? _weather;
 
-  _fetchWeather() async {
+  Future _fetchWeather() async {
     //get current city
-    String cityName = await _weatherService.getCurrentCity('');
+    String cityName = await _weatherService.getCurrentCity();
     //any errors
     try {
       final weather = await _weatherService.getWeather(cityName);
@@ -27,7 +29,9 @@ class _WeatherPageState extends State<WeatherPage> {
     }
     //any errors
     catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
   //init state
@@ -59,19 +63,22 @@ String getWeatherAnimation(String? mainCondition){
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
-      backgroundColor: Colors.lightBlue,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(_weather?.cityName ?? "loading city...",style: TextStyle(fontSize: 56.0,color: Colors.white),),
-            //animation
-            Lottie.asset('assets/raining.json'),
-            Text('${_weather?.temperature.round()}ºC',style: TextStyle(fontSize: 46.0,color: Colors.white),),
-            SizedBox(height: 20,),
-            Text(_weather?.mainCondition ?? "",style: TextStyle(fontSize: 26.0,color: Colors.white),)
-          ],
+    return  LiquidPullToRefresh(
+      onRefresh: _fetchWeather,
+      child: Scaffold(
+        backgroundColor: Colors.lightBlue,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(_weather?.cityName ?? "loading city...",style: const TextStyle(fontSize: 56.0,color: Colors.white),),
+              //animation
+              Lottie.asset('assets/raining.json'),
+              Text('${_weather?.temperature.round()}ºC',style: const TextStyle(fontSize: 46.0,color: Colors.white),),
+              const SizedBox(height: 20,),
+              Text(_weather?.mainCondition ?? "",style: const TextStyle(fontSize: 26.0,color: Colors.white),)
+            ],
+          ),
         ),
       ),
     );

@@ -39,6 +39,12 @@ dependencies:
   geolocator: ^10.1.0
   geocoding: ^2.1.1
   lottie: ^2.7.0
+  flutter_bloc: ^8.1.3
+  connectivity: ^3.0.6
+  bloc: ^8.1.2
+  equatable: ^2.0.5
+  liquid_pull_to_refresh: ^3.0.1
+  flutter_dotenv: ^5.0.3
 
 dev_dependencies:
   flutter_test:
